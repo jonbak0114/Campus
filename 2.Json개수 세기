@@ -1,0 +1,30 @@
+import json
+
+def count_string_with_common_values(json_data, target_values):
+    count = 0
+    if isinstance(json_data, dict):
+        values = list(json_data.values())
+        if all(value in values for value in target_values):
+            count += 1
+        for value in values:
+            count += count_string_with_common_values(value, target_values)
+    elif isinstance(json_data, list):
+        for item in json_data:
+            count += count_string_with_common_values(item, target_values)
+    return count
+
+# JSON 파일 경로
+file_path = "C:/Users/서종민/Desktop/Json 개수 세기.json"
+
+# JSON 파일 열기
+with open(file_path, encoding='UTF-8') as file:
+    # JSON 데이터 파싱
+    json_data = json.load(file)
+
+# 공통 값들
+target_values = ["CN", "2022"]
+
+# 공통 값을 가진 항목 개수 구하기
+string_count = count_string_with_common_values(json_data, target_values)
+
+print(f"The count of strings with common values {target_values}: {string_count}")
