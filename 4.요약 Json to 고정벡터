@@ -1,0 +1,23 @@
+import json
+from sentence_transformers import SentenceTransformer
+
+# Load a pre-trained sentence transformer model
+model_name = 'sentence-transformers/all-MiniLM-L6-v2'
+model = SentenceTransformer(model_name)
+
+# Load sentences from JSON file
+sentences = []
+with open("C:/Users/서종민/Desktop/요약.json", encoding="utf-8") as file:
+    data = json.load(file)
+    sentences = [item["요약"] for item in data["Sheet1"]]
+
+# Convert sentences to fixed-length vectors
+sentence_embeddings = model.encode(sentences, show_progress_bar=True)
+
+# Convert sentence embeddings to a list of lists
+embedding_list = [embedding.tolist() for embedding in sentence_embeddings]
+
+# Save the fixed-length vectors to a JSON file
+output_file_path = "C:/Users/서종민/Desktop/요약(결과).json"
+with open(output_file_path, "w", encoding="utf-8") as output_file:
+    json.dump(embedding_list, output_file)
