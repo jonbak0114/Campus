@@ -1,0 +1,48 @@
+from sklearn.cluster import DBSCAN
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import json
+
+def dbscan_clustering_3d(file_path, subset_size, epsilon=0.1, min_samples=5):
+    # 파일로부터 데이터 읽어오기
+    with open(file_path, 'r') as file:
+        data = json.load(file)
+
+    vectors = np.array(data)
+
+    # Choose a subset of the data
+    subset_vectors = vectors[:subset_size]
+
+    dbscan = DBSCAN(eps=epsilon, min_samples=min_samples)
+    labels = dbscan.fit_predict(subset_vectors)
+
+    # 시각화를 위한 3D 산점도 플롯
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    unique_labels = set(labels)
+    colors = [plt.cm.Spectral(each) for each in np.linspace(0, 1, len(unique_labels))]
+
+    for k, col in zip(unique_labels, colors):
+        if k == -1:  # 잡음 포인트는 검정색으로 표시
+            col = [0, 0, 0, 1]
+
+        class_member_mask = (labels == k)
+        xyz = subset_vectors[class_member_mask]
+        ax.scatter(xyz[:, 0], xyz[:, 1], xyz[:, 2], s=50, c=[col], marker='o')
+
+    ax.set_title('DBSCAN Clustering (3D)')
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    plt.show()
+
+# 파일 경로와 클러스터링에 사용할 데이터 크기를 설정합니다.
+file_path = "C:/Users/서종민/Desktop/요약고정벡터(축소).json"  # 파일 경로를 적절히 수정해주세요
+subset_size = 196132  # 클러스터링에 사용할 데이터 크기를 조정합니다.
+epsilon = 0.05  # 적절한 반경 값을 설정합니다. (더 작은 값으로 변경)
+min_samples = 5 # 적절한 최소 이웃 개수를 설정합니다.
+
+# DBSCAN 클러스터링을 수행하고 결과를 3D 시각화합니다.
+dbscan_clustering_3d(file_path, subset_size, epsilon=epsilon, min_samples=min_samples)
